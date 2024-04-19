@@ -1,11 +1,37 @@
-import React from 'react'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import Main from "./layouts/Main";
+import Index from "./pages/Index";
+import Create from "./pages/Create";
+import Edit from "./pages/Edit";
+import Details from "./pages/Details";
 
 const App = () => {
-  return (
-    <div>
-      <h1 className='text-red-600'>App</h1>
-    </div>
-  )
-}
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Main />,
+      children: [
+        {
+          index: true,
+          element: <Index />,
+        },
+        {
+          path: "/create",
+          element: <Create />,
+        },
+        {
+          path: "/edit/:id",
+          element: <Edit />,
+        },
+        {
+          path: "note/:id",
+          element: <Details />,
+        },
+      ],
+    },
+  ]);
+  return <RouterProvider router={router} />;
+};
 
-export default App
+export default App;
