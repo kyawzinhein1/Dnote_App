@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar'
 
 const Main = () => {
   return (
-    <section>
+    <section className='max-w-2xl mx-auto relative h-screen'>
         <Navbar/>
         <Outlet/>
     </section>

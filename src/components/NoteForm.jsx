@@ -1,8 +1,34 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { Formik, Form, Field } from "formik";
+
+// formik custom error message
+import StyledErrorMessage from "./StyledErrorMessage";
 
 const NoteForm = ({ isCreate }) => {
+  const initialValues = {
+    title: "",
+    content: "",
+  };
+
+  const validate = (values) => {
+    const errors = {};
+
+    if (values.title.trim().length < 10) {
+      errors.title = "Title must have 10 lengths.";
+    }
+
+    if (values.content.trim().length < 10) {
+      errors.content = "Content must have 10 lengths.";
+    }
+
+    return errors;
+  };
+
+  const submitHandler = (values) => {
+    console.log(values);
+  };
   return (
     <section>
       <div className="flex justify-between items-center">
@@ -13,34 +39,46 @@ const NoteForm = ({ isCreate }) => {
           <ArrowLeftIcon width={20} />
         </Link>
       </div>
-      <form>
-        <div>
-          <label htmlFor="title" className="font-medium block">
-            Note Title
-          </label>
-          <input
-            type="text"
-            name="title"
-            id="title"
-            className="text-lg border-2 border-teal-600 rounded-md py-2 w-full px-2 outline-none"
-          />
-        </div>
-        <div>
-          <label htmlFor="title" className="font-medium block">
-            Note Description
-          </label>
-          <textarea
-            rows={5}
-            type="text"
-            name="description"
-            id="description"
-            className="text-lg border-2 border-teal-600 rounded-md py-1 w-full px-2 outline-none"
-          />
-        </div>
-        <button className="w-full bg-teal-600 font-medium text-white py-2 rounded-md mt-2">
-          Save
-        </button>
-      </form>
+      <Formik
+        initialValues={initialValues}
+        validate={validate}
+        onSubmit={submitHandler}
+      >
+        <Form>
+          <div>
+            <label htmlFor="title" className="font-medium block">
+              Title
+            </label>
+            <Field
+              type="text"
+              name="title"
+              id="title"
+              className="text-lg border-2 border-teal-600 rounded-md py-2 w-full px-2 outline-none"
+            />
+            <StyledErrorMessage name="title" />
+          </div>
+          <div>
+            <label htmlFor="title" className="font-medium block">
+              Content
+            </label>
+            <Field
+              as="textarea"
+              rows={5}
+              type="text"
+              name="content"
+              id="content"
+              className="text-lg border-2 border-teal-600 rounded-md py-1 w-full px-2 outline-none"
+            />
+            <StyledErrorMessage name="content" />
+          </div>
+          <button
+            className="w-full bg-teal-600 font-medium text-white py-2 rounded-md mt-2"
+            type="submit"
+          >
+            Save
+          </button>
+        </Form>
+      </Formik>
     </section>
   );
 };

@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 const Note = () => {
   return (
-    <div className="w-2/5 border-t-4 border-t-teal-400 shadow-lg p-3 mt-6 rounded-md">
+    <div className="w-2/5 border-t-4 border-t-teal-400 shadow-lg p-3 mt-6 rounded-md mx-auto">
       <h3 className="text-xl">Lorem ipsum dolor</h3>
       <p className="text-sm">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero sequi
