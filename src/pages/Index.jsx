@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Note from "../components/Note";
-import Plus from "../components/Plus";
 import { RotatingLines } from "react-loader-spinner";
 
 import { Bounce, ToastContainer, toast } from "react-toastify";
@@ -23,7 +22,7 @@ const Index = () => {
   }, []);
 
   const customAlert = (message) => {
-    toast.success(message, {
+    toast.warning(message, {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -37,7 +36,7 @@ const Index = () => {
   };
 
   return (
-    <section className="flex gap-6 px-10 flex-wrap">
+    <section className="flex gap-5 flex-wrap justify-center">
       {!loading && notes.length > 0 ? (
         <>
           {notes.map((note) => (
@@ -77,7 +76,6 @@ const Index = () => {
         theme="colored"
         transition:Bounce
       />
-      <Plus />
     </section>
   );
 };
