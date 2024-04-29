@@ -47,6 +47,13 @@ const Details = () => {
           <Link to={"/"} className="flex justify-end">
             <ArrowLeftIcon width={20} />
           </Link>
+          {note.cover_image && (
+            <img
+              className="w-full my-3 h-36 object-cover"
+              src={`${import.meta.env.VITE_API}/${note.cover_image}`}
+              alt={note.title}
+            />
+          )}
           <div className="border-t-4 border-t-teal-600 shadow-lg p-3 mt-4">
             <h3 className="text-3xl font-medium">{note.title}</h3>
             <div className="flex gap-4 my-2">

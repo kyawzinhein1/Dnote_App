@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, ArrowUpTrayIcon } from "@heroicons/react/24/solid";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
@@ -9,10 +9,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 // formik custom error message
 import StyledErrorMessage from "./StyledErrorMessage";
+import { useRef } from "react";
 
 const NoteForm = ({ isCreate }) => {
   const [redirect, setRedirect] = useState(false);
   const [oldNote, setOldNote] = useState({});
+  const [previewImg, setPreviewImg] = useState(null);
+  const fileRef = useRef();
 
   const { id } = useParams();
 
@@ -36,7 +39,10 @@ const NoteForm = ({ isCreate }) => {
     title: isCreate ? "" : oldNote.title,
     content: isCreate ? "" : oldNote.content,
     note_id: isCreate ? "" : oldNote._id,
+    cover_image: isCreate ? null : oldNote.cover_image,
   };
+
+  const SUPPORTED_FORMATS = ["image/png", "image/jpg", "image/jpeg"];
 
   const noteFormSchema = Yup.object({
     title: Yup.string()
@@ -46,7 +52,28 @@ const NoteForm = ({ isCreate }) => {
     content: Yup.string()
       .min(5, "Content is too short!")
       .required("Content is required"),
+    cover_image: Yup.mixed()
+      .nullable()
+      .test(
+        "FILE_FORMAT",
+        "File type is not support!",
+        (value) => !value || SUPPORTED_FORMATS.includes(value.type)
+      ),
   });
+
+  const handleImageChange = (event, setFieldValue) => {
+    const selectedImage = event.target.files[0];
+
+    if (selectedImage) {
+      setPreviewImg(URL.createObjectURL(selectedImage));
+      setFieldValue("cover_image", selectedImage);
+    }
+  };
+
+  const clearPreviewImg = (setFieldValue) => {
+    setPreviewImg(null);
+    setFieldValue("cover_image", null);
+  };
 
   const submitHandler = async (values) => {
     let API = `${import.meta.env.VITE_API}`;
@@ -60,12 +87,16 @@ const NoteForm = ({ isCreate }) => {
       method = "put";
     }
 
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("content", values.content);
+    formData.append("cover_image", values.cover_image);
+    formData.append("note_id", values.note_id);
+    // <Field type="text" name="note_id" id="note_id" hidden />
+
     const response = await fetch(API, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(values),
+      body: formData,
     });
     if (response.status === 201 || response.status === 200) {
       setRedirect(true);
@@ -117,42 +148,88 @@ const NoteForm = ({ isCreate }) => {
         onSubmit={submitHandler}
         enableReinitialize={true}
       >
-        <Form>
-          <div>
-            <label htmlFor="title" className="font-medium block">
-              Title
-            </label>
-            <Field
-              type="text"
-              name="title"
-              id="title"
-              className="text-lg border-2 border-teal-600 rounded-md py-2 w-full px-2 outline-none"
-            />
-            <StyledErrorMessage name="title" />
-          </div>
-          <div>
-            <label htmlFor="title" className="font-medium block">
-              Content
-            </label>
-            <Field
-              as="textarea"
-              rows={5}
-              type="text"
-              name="content"
-              id="content"
-              className="text-lg border-2 border-teal-600 rounded-md py-1 w-full px-2 outline-none"
-            />
-            <StyledErrorMessage name="content" />
-          </div>
-          <Field type="text" name="note_id" id="note_id" hidden />
-          <button
-            className="w-full bg-teal-600 font-medium text-white py-2 rounded-md mt-2"
-            type="submit"
-          >
-            {isCreate ? "Create Note" : "Update Note"}
-          </button>
-        </Form>
+        {({ errors, touched, values, setFieldValue }) => (
+          <Form encType="multipart/form-data">
+            <div className="mb-3">
+              <label htmlFor="title" className="font-medium block">
+                Title
+              </label>
+              <Field
+                type="text"
+                name="title"
+                id="title"
+                className="text-lg border-2 border-teal-600 rounded-md py-2 w-full px-2 outline-none"
+              />
+              <StyledErrorMessage name="title" />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="title" className="font-medium block">
+                Content
+              </label>
+              <Field
+                as="textarea"
+                rows={5}
+                type="text"
+                name="content"
+                id="content"
+                className="text-lg border-2 border-teal-600 rounded-md py-1 w-full px-2 outline-none"
+              />
+              <StyledErrorMessage name="content" />
+            </div>
+            <div className="mb-1">
+              <div className="flex items-center justify-between">
+                <label htmlFor="cover_image" className="font-medium block mb-1">
+                  Cover image{" "}
+                  <span className="text-xs font-medium">optional</span>
+                </label>
+                {previewImg && (
+                  <p
+                    className="text-teal-600 text-base font-medium cursor-pointer"
+                    onClick={(_) => {
+                      clearPreviewImg(setFieldValue);
+                    }}
+                  >
+                    clear
+                  </p>
+                )}
+              </div>
+              <input
+                type="file"
+                name="cover_image"
+                hidden
+                ref={fileRef}
+                onChange={(e) => {
+                  handleImageChange(e, setFieldValue);
+                }}
+              />
+              <div
+                className="border border-teal-600 rounded-md flex items-center justify-center text-teal-600 border-dashed h-60 cursor-pointer relative"
+                onClick={(_) => {
+                  fileRef.current.click();
+                }}
+              >
+                <ArrowUpTrayIcon width={30} height={30} className="z-20" />
+                {previewImg && (
+                  <img
+                    src={previewImg}
+                    alt="preview"
+                    className="w-full absolute top-0 left-0 h-full object-cover opacity-80 z-10"
+                  />
+                )}
+              </div>
+              <StyledErrorMessage name="cover_image" />
+            </div>
+            <button
+              className="w-full bg-teal-600 font-medium text-white py-2 rounded-md mt-2"
+              type="submit"
+            >
+              {isCreate ? "Create Note" : "Update Note"}
+            </button>
+          </Form>
+        )}
       </Formik>
+      <br />
     </section>
   );
 };

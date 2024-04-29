@@ -9,7 +9,7 @@ const Navbar = () => {
       </h1>
       <div>
         <Link to={"/create"} className="text-teal-600 font-medium">
-          Create
+          CREATE
         </Link>
       </div>
     </nav>
