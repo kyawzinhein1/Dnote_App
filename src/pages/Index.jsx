@@ -8,18 +8,38 @@ import "react-toastify/dist/ReactToastify.css";
 const Index = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const getNotes = async () => {
+  const getNotes = async (pageNumber) => {
     setLoading(true);
-    const response = await fetch(`${import.meta.env.VITE_API}/notes`);
-    const notes = await response.json();
+    const response = await fetch(
+      `${import.meta.env.VITE_API}/notes?page=${pageNumber}`
+    );
+    const { notes, totalNotes, totalPages } = await response.json();
+    setTotalPages(totalPages);
     setNotes(notes);
     setLoading(false);
   };
 
-  useEffect((_) => {
-    getNotes();
-  }, []);
+  useEffect(
+    (_) => {
+      getNotes(currentPage);
+    },
+    [currentPage]
+  );
+
+  const handlePre = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   const customAlert = (message) => {
     toast.warning(message, {
@@ -47,6 +67,26 @@ const Index = () => {
               customAlert={customAlert}
             />
           ))}
+          <div className="w-full flex items-center justify-center gap-5 mb-10">
+            {currentPage > 1 && (
+              <button
+                type="button"
+                className="text-white font-medium bg-teal-600 px-3 py-1 rounded-sm"
+                onClick={handlePre}
+              >
+                Prev Page
+              </button>
+            )}
+            {currentPage < totalPages && (
+              <button
+                type="button"
+                className="text-white font-medium bg-teal-600 px-3 py-1 rounded-sm"
+                onClick={handleNext}
+              >
+                Next Page
+              </button>
+            )}
+          </div>
         </>
       ) : (
         <div className="flex justify-center items-center w-full h-96">
