@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon, ArrowUpTrayIcon } from "@heroicons/react/24/solid";
 import { Formik, Form, Field } from "formik";
@@ -9,9 +9,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 // formik custom error message
 import StyledErrorMessage from "./StyledErrorMessage";
-import { useRef } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 const NoteForm = ({ isCreate }) => {
+  const { token } = useContext(UserContext);
   const [redirect, setRedirect] = useState(false);
   const [oldNote, setOldNote] = useState({});
   const [previewImg, setPreviewImg] = useState(null);
@@ -99,6 +100,9 @@ const NoteForm = ({ isCreate }) => {
     const response = await fetch(API, {
       method,
       body: formData,
+      headers: {
+        Authorization: `Bearer ${token.token}`,
+      },
     });
     if (response.status === 201 || response.status === 200) {
       setRedirect(true);
