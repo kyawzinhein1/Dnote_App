@@ -102,7 +102,7 @@ const AuthForm = ({ isLogin }) => {
         validationSchema={authFormSchema}
         onSubmit={submitHandler}
       >
-        {() => (
+        {({ isSubmitting }) => (
           <Form className="w-1/2 mx-auto">
             <h1 className="text-center font-bold text-4xl my-4 text-teal-600">
               {isLogin ? "Login" : "Register"}
@@ -148,8 +148,11 @@ const AuthForm = ({ isLogin }) => {
             <button
               className="w-full bg-teal-600 font-medium text-white py-2 rounded-md mt-2"
               type="submit"
+              disabled={isSubmitting}
             >
-              {isLogin ? "Login" : "Register"}
+              {isLogin
+                ? `${isSubmitting ? "Submitting..." : "Login"}`
+                : `${isSubmitting ? "Submitting..." : "Register"}`}
             </button>
           </Form>
         )}
