@@ -22,6 +22,8 @@ const Note = ({ note, getNotes, customAlert }) => {
     if (response.status === 204) {
       customAlert("Post deleted.");
       getNotes();
+    } else {
+      customAlert("Auth failed.", true);
     }
   };
 
@@ -34,14 +36,22 @@ const Note = ({ note, getNotes, customAlert }) => {
           {formatISO9075(new Date(createdAt), { representation: "date" })}
         </p>
         <div className="flex items-center gap-2 justify-end">
-          <TrashIcon
-            width={20}
-            className="text-red-600 cursor-pointer"
-            onClick={deleteNote}
-          />
-          <Link to={"/edit/" + _id}>
-            <PencilSquareIcon width={20} className="text-teal-600" />
-          </Link>
+          {token && (
+            <>
+              {note.author.toString() === token.userId && (
+                <>
+                  <TrashIcon
+                    width={20}
+                    className="text-red-600 cursor-pointer"
+                    onClick={deleteNote}
+                  />
+                  <Link to={"/edit/" + _id}>
+                    <PencilSquareIcon width={20} className="text-teal-600" />
+                  </Link>
+                </>
+              )}
+            </>
+          )}
           <Link to={"/notes/" + _id}>
             <EyeIcon width={20} className="text-gray-600" />
           </Link>
