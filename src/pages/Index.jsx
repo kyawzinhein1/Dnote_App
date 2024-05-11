@@ -91,7 +91,7 @@ const Index = () => {
       ) : (
         <div className="flex justify-center items-center w-full h-96">
           <RotatingLines
-            visible={true}
+            visible={loading}
             height="60"
             width="60"
             color="grey"
@@ -101,6 +101,7 @@ const Index = () => {
             wrapperStyle={{}}
             wrapperClass=""
           />
+          {!loading && notes.length === 0 && <p>Notes are not shared yet.</p>}
         </div>
       )}
       <ToastContainer

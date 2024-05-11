@@ -83,7 +83,7 @@ const NoteForm = ({ isCreate }) => {
     let method;
 
     if (isCreate) {
-      API = `${import.meta.env.VITE_API}/create`;
+      API = `${import.meta.env.VITE_API}/create`,{};
       method = "post";
     } else {
       API = `${import.meta.env.VITE_API}/edit`;
@@ -95,7 +95,6 @@ const NoteForm = ({ isCreate }) => {
     formData.append("content", values.content);
     formData.append("cover_image", values.cover_image);
     formData.append("note_id", values.note_id);
-    // <Field type="text" name="note_id" id="note_id" hidden />
 
     const response = await fetch(API, {
       method,
